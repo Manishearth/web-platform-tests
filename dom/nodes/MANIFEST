@@ -11,6 +11,7 @@ support ChildNode-remove.js
 support creators.js
 Document-adoptNode.html
 http Document-characterSet-normalization.html
+Document-constructor.html
 Document-createComment.html
 Document-createElement.html
 Document-createElement-namespace.html
