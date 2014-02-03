@@ -1,5 +1,5 @@
-// Tests <http://dev.w3.org/2006/webapi/WebIDL/#es-stringifier>.
-function test_stringifier_attribute(aObject, aAttribute) {
+// Tests <http://heycam.github.io/webidl/#es-stringifier>.
+function test_stringifier_attribute(aObject, aAttribute, aIsUnforgeable) {
   // Step 1.
   test(function() {
     [null, undefined].forEach(function(v) {
@@ -9,7 +9,9 @@ function test_stringifier_attribute(aObject, aAttribute) {
     });
   });
 
-  // Step 2.
+  // TODO Step 2: security check.
+
+  // Step 3.
   test(function() {
     assert_false("Window" in window && aObject instanceof window.Window);
     [{}, window].forEach(function(v) {
@@ -19,26 +21,26 @@ function test_stringifier_attribute(aObject, aAttribute) {
     });
   });
 
-  // Step 3.
-  var test_error = { name: "test" };
-  test(function() {
-    Object.defineProperty(aObject, aAttribute, {
-      configurable: true,
-      get: function() { throw test_error; }
+  // Step 4-6.
+  if (!aIsUnforgeable) {
+    var expected_value = aObject[aAttribute];
+    assert_equals(aObject[aAttribute], expected_value,
+                  "The attribute " + aAttribute + " should be pure.");
+    var test_error = { name: "test" };
+    test(function() {
+      Object.defineProperty(aObject, aAttribute, {
+        configurable: true,
+        get: function() { throw test_error; }
+      });
+      assert_equals(aObject.toString(), expected_value);
     });
-    assert_throws(test_error, function() {
-      aObject.toString();
-    });
-  });
 
-  // Step 4.
-  test(function() {
-    Object.defineProperty(aObject, aAttribute, {
-      configurable: true,
-      value: { toString: function() { throw test_error; } }
+    test(function() {
+      Object.defineProperty(aObject, aAttribute, {
+        configurable: true,
+        value: { toString: function() { throw test_error; } }
+      });
+      assert_equals(aObject.toString(), expected_value);
     });
-    assert_throws(test_error, function() {
-      aObject.toString();
-    });
-  });
+  }
 }
