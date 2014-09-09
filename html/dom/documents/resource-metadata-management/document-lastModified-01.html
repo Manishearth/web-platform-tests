@@ -35,9 +35,9 @@
   var old = Date.parse(document.lastModified);
   setTimeout(function() {
     t.step(function() {
-      assert_equals((new Date(Date.parse(document.lastModified))).toString(),
-        (new Date(old + 1000)).toString());
+      assert_true(Math.abs(new Date(Date.parse(document.lastModified))-
+                  new Date(old + 2000)) < 300);
       t.done();
     });
-  }, 1000);
+  }, 2000);
 </script>
